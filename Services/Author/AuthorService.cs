@@ -17,9 +17,27 @@ namespace WebAPI_DOTNET8.Services.Author
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModel<AuthorModel>> GetAuthorById(int idAuthor)
+        public async Task<ResponseModel<AuthorModel>> GetAuthorById(int idAuthor)
         {
-            throw new NotImplementedException();
+            ResponseModel<AuthorModel> response = new ResponseModel<AuthorModel>();
+            try
+            {
+                var author = await _context.Authors.FirstOrDefaultAsync(a => a.Id == idAuthor);
+                if (author == null) 
+                {
+                    response.Message = "Author not found";
+                }
+
+                response.Data = author;
+                response.Message = "Author found!";
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = false;
+            }
+
+            return response;
         }
 
         public async Task<ResponseModel<List<AuthorModel>>> ListAuthors()
