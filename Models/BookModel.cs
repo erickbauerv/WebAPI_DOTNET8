@@ -1,0 +1,9 @@
+﻿namespace WebAPI_DOTNET8.Models
+{
+    public class BookModel
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public AuthorModel Autor { get; set; }
+    }
+}
