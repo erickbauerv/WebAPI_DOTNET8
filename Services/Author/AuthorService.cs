@@ -13,7 +13,7 @@ namespace WebAPI_DOTNET8.Services.Author
             _context = context;
         }
 
-        public async Task<ResponseModel<List<AuthorModel>>> CreateAuthor(AuthorDTO authorDTO)
+        public async Task<ResponseModel<List<AuthorModel>>> CreateAuthor(AuthorCreateDTO authorDTO)
         {
             ResponseModel<List<AuthorModel>> response = new ResponseModel<List<AuthorModel>>();
             try
@@ -29,6 +29,33 @@ namespace WebAPI_DOTNET8.Services.Author
 
                 response.Data = await _context.Authors.ToListAsync();
                 response.Message = "Author created successfully!";
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = false;
+            }
+
+            return response;
+        }
+
+        public async Task<ResponseModel<List<AuthorModel>>> DeleteAuthor(int idAuthor)
+        {
+            ResponseModel<List<AuthorModel>> response = new ResponseModel<List<AuthorModel>>();
+            try
+            {
+                var author = await _context.Authors.FirstOrDefaultAsync(a => a.Id == idAuthor);
+                if (author == null)
+                {
+                    response.Message = "No authors found";
+                    return response;
+                }
+
+                _context.Remove(author);
+                await _context.SaveChangesAsync();
+
+                response.Data = await _context.Authors.ToListAsync();
+                response.Message = "Author successfully removed!";
             }
             catch (Exception ex)
             {
@@ -87,6 +114,36 @@ namespace WebAPI_DOTNET8.Services.Author
             {
                 response.Data = await _context.Authors.ToListAsync();
                 response.Message = "All authors were collected!";
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = false;
+            }
+
+            return response;
+        }
+
+        public async Task<ResponseModel<List<AuthorModel>>> UpdateAuthor(AuthorUpdateDTO authorDTO)
+        {
+            ResponseModel<List<AuthorModel>> response = new ResponseModel<List<AuthorModel>>();
+            try
+            {
+                var author = _context.Authors.FirstOrDefault(a => a.Id == authorDTO.Id);
+                if (author == null)
+                {
+                    response.Message = "No authors found";
+                    return response;
+                }
+
+                author.Name = authorDTO.Name;
+                author.LastName = authorDTO.LastName;
+
+                _context.Update(author);
+                await _context.SaveChangesAsync();
+
+                response.Data = await _context.Authors.ToListAsync();
+                response.Message = "Author edited successfully!";
             }
             catch (Exception ex)
             {

@@ -8,6 +8,8 @@ namespace WebAPI_DOTNET8.Services.Author
         Task<ResponseModel<List<AuthorModel>>> ListAuthors();
         Task<ResponseModel<AuthorModel>> GetAuthorById(int idAuthor);
         Task<ResponseModel<AuthorModel>> GetAuthorByBookId(int bookId);
-        Task<ResponseModel<List<AuthorModel>>> CreateAuthor(AuthorDTO authorDTO);
+        Task<ResponseModel<List<AuthorModel>>> CreateAuthor(AuthorCreateDTO authorDTO);
+        Task<ResponseModel<List<AuthorModel>>> UpdateAuthor(AuthorUpdateDTO authorDTO);
+        Task<ResponseModel<List<AuthorModel>>> DeleteAuthor(int idAuthor);
     }
 }

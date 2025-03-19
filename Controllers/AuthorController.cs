@@ -39,9 +39,23 @@ namespace WebAPI_DOTNET8.Controllers
         }
 
         [HttpPost("CreateAuthor")]
-        public async Task<ActionResult<ResponseModel<AuthorModel>>> CreateAuthor(AuthorDTO authorDTO)
+        public async Task<ActionResult<List<ResponseModel<AuthorModel>>>> CreateAuthor(AuthorCreateDTO authorDTO)
         {
             var authors = await _authorInterface.CreateAuthor(authorDTO);
+            return Ok(authors);
+        }
+
+        [HttpPut("UpdateAuthor")]
+        public async Task<ActionResult<List<ResponseModel<AuthorModel>>>> UpdateAuthor(AuthorUpdateDTO authorDTO)
+        {
+            var authors = await _authorInterface.UpdateAuthor(authorDTO);
+            return Ok(authors);
+        }
+
+        [HttpDelete("DeleteAuthor")]
+        public async Task<ActionResult<List<ResponseModel<AuthorModel>>>> DeleteAuthor(int idAuthor)
+        {
+            var authors = await _authorInterface.DeleteAuthor(idAuthor); 
             return Ok(authors);
         }
     }
