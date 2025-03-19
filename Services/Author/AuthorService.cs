@@ -12,9 +12,26 @@ namespace WebAPI_DOTNET8.Services.Author
             _context = context;
         }
 
-        public Task<ResponseModel<AuthorModel>> GetAuthorByBookId(int bookId)
+        public async Task<ResponseModel<AuthorModel>> GetAuthorByBookId(int idBook)
         {
-            throw new NotImplementedException();
+            ResponseModel<AuthorModel> response = new ResponseModel<AuthorModel>();
+            try
+            {
+                var book = await _context.Books
+                    .Include(a => a.Author)
+                    .FirstOrDefaultAsync(b => b.Id == idBook);
+
+                var author = book != null ? book.Author : null;
+                response.Data = author;
+                response.Message = author != null ? "Author found!" : "Author not found";
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = false;
+            }
+
+            return response;
         }
 
         public async Task<ResponseModel<AuthorModel>> GetAuthorById(int idAuthor)
@@ -23,13 +40,9 @@ namespace WebAPI_DOTNET8.Services.Author
             try
             {
                 var author = await _context.Authors.FirstOrDefaultAsync(a => a.Id == idAuthor);
-                if (author == null) 
-                {
-                    response.Message = "Author not found";
-                }
 
                 response.Data = author;
-                response.Message = "Author found!";
+                response.Message = author != null ? "Author found!" : "Author not found";
             }
             catch (Exception ex)
             {
