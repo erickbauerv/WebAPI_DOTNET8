@@ -1,4 +1,5 @@
-﻿using WebAPI_DOTNET8.Models;
+﻿using WebAPI_DOTNET8.DTOs;
+using WebAPI_DOTNET8.Models;
 
 namespace WebAPI_DOTNET8.Services.Author
 {
@@ -7,5 +8,6 @@ namespace WebAPI_DOTNET8.Services.Author
         Task<ResponseModel<List<AuthorModel>>> ListAuthors();
         Task<ResponseModel<AuthorModel>> GetAuthorById(int idAuthor);
         Task<ResponseModel<AuthorModel>> GetAuthorByBookId(int bookId);
+        Task<ResponseModel<List<AuthorModel>>> CreateAuthor(AuthorDTO authorDTO);
     }
 }

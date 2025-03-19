@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebAPI_DOTNET8.Data;
+using WebAPI_DOTNET8.DTOs;
 using WebAPI_DOTNET8.Models;
 
 namespace WebAPI_DOTNET8.Services.Author
@@ -10,6 +11,32 @@ namespace WebAPI_DOTNET8.Services.Author
         public AuthorService(AppDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<ResponseModel<List<AuthorModel>>> CreateAuthor(AuthorDTO authorDTO)
+        {
+            ResponseModel<List<AuthorModel>> response = new ResponseModel<List<AuthorModel>>();
+            try
+            {
+                var author = new AuthorModel()
+                {
+                    Name = authorDTO.Name,
+                    LastName = authorDTO.LastName,
+                };
+
+                _context.Add(author);
+                await _context.SaveChangesAsync();
+
+                response.Data = await _context.Authors.ToListAsync();
+                response.Message = "Author created successfully!";
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = false;
+            }
+
+            return response;
         }
 
         public async Task<ResponseModel<AuthorModel>> GetAuthorByBookId(int idBook)
@@ -58,9 +85,7 @@ namespace WebAPI_DOTNET8.Services.Author
             ResponseModel<List<AuthorModel>> response = new ResponseModel<List<AuthorModel>>();
             try 
             {
-                var authors = await _context.Authors.ToListAsync();
-
-                response.Data = authors;
+                response.Data = await _context.Authors.ToListAsync();
                 response.Message = "All authors were collected!";
             }
             catch (Exception ex)

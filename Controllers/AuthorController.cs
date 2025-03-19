@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI_DOTNET8.DTOs;
 using WebAPI_DOTNET8.Models;
 using WebAPI_DOTNET8.Services.Author;
 
@@ -35,6 +36,13 @@ namespace WebAPI_DOTNET8.Controllers
         {
             var author = await _authorInterface.GetAuthorByBookId(idBook);
             return Ok(author);
+        }
+
+        [HttpPost("CreateAuthor")]
+        public async Task<ActionResult<ResponseModel<AuthorModel>>> CreateAuthor(AuthorDTO authorDTO)
+        {
+            var authors = await _authorInterface.CreateAuthor(authorDTO);
+            return Ok(authors);
         }
     }
 }
