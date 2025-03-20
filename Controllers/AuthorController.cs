@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebAPI_DOTNET8.DTOs;
 using WebAPI_DOTNET8.Models;
 using WebAPI_DOTNET8.Services.Author;

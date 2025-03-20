@@ -27,7 +27,7 @@ namespace WebAPI_DOTNET8.Services.Book
                 _context.Add(book);
                 await _context.SaveChangesAsync();
 
-                response.Data = await _context.Books.ToListAsync();
+                response.Data = await _context.Books.Include(b => b.Author).ToListAsync();
                 response.Message = "Book created successfully!";
             }
             catch (Exception ex) 
@@ -54,7 +54,7 @@ namespace WebAPI_DOTNET8.Services.Book
                 _context.Remove(book);
                 await _context.SaveChangesAsync();
 
-                response.Data = await _context.Books.ToListAsync();
+                response.Data = await _context.Books.Include(b => b.Author).ToListAsync();
                 response.Message = "Book successfully removed!";
             }
             catch (Exception ex)
@@ -71,7 +71,7 @@ namespace WebAPI_DOTNET8.Services.Book
             ResponseModel<BookModel> response = new ResponseModel<BookModel>();
             try
             {
-                var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == idBook);
+                var book = await _context.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == idBook);
 
                 response.Data = book;
                 response.Message = book != null ? "Book found!" : "Book not found";
@@ -90,7 +90,7 @@ namespace WebAPI_DOTNET8.Services.Book
             ResponseModel<List<BookModel>> response = new ResponseModel<List<BookModel>>();
             try
             {
-                response.Data = await _context.Books.ToListAsync();
+                response.Data = await _context.Books.Include(b => b.Author).ToListAsync();
                 response.Message = "All books were collected!";
             }
             catch (Exception ex)
@@ -120,7 +120,7 @@ namespace WebAPI_DOTNET8.Services.Book
                 _context.Update(book);
                 await _context.SaveChangesAsync();
 
-                response.Data = await _context.Books.ToListAsync();
+                response.Data = await _context.Books.Include(b => b.Author).ToListAsync();
                 response.Message = "Book edited successfully!";
             }
             catch (Exception ex)
