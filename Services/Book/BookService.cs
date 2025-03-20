@@ -18,10 +18,18 @@ namespace WebAPI_DOTNET8.Services.Book
             ResponseModel<List<BookModel>> response = new ResponseModel<List<BookModel>>();
             try
             {
+                var author = await _context.Authors.FirstOrDefaultAsync(a => a.Id == bookDTO.IdAuthor);
+
+                if(author == null)
+                {
+                    response.Message = "No author record found";
+                    return response;
+                }
+
                 var book = new BookModel()
                 {
                     Title = bookDTO.Title,
-                    Author = await _context.Authors.FirstOrDefaultAsync(a => a.Id == bookDTO.IdAuthor)
+                    Author = author
                 };
 
                 _context.Add(book);
