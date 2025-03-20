@@ -30,6 +30,13 @@ namespace WebAPI_DOTNET8.Controllers
             return Ok(book);
         }
 
+        [HttpGet("GetBooksByAuthorId/{idAuthor}")]
+        public async Task<ActionResult<ResponseModel<List<BookModel>>>> GetBooksByAuthorId(int idAuthor)
+        {
+            var books = await _bookInterface.GetBooksByAuthorId(idAuthor);
+            return Ok(books);
+        }
+
         [HttpPost("CreateBook")]
         public async Task<ActionResult<ResponseModel<List<BookModel>>>> CreateBook(BookCreateDTO bookDTO)
         {

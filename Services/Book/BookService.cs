@@ -85,6 +85,34 @@ namespace WebAPI_DOTNET8.Services.Book
             return response;
         }
 
+        public async Task<ResponseModel<List<BookModel>>> GetBooksByAuthorId(int idAuthor)
+        {
+            ResponseModel<List<BookModel>> response = new ResponseModel<List<BookModel>>();
+            try
+            {
+                var books = await _context.Books
+                    .Include(b => b.Author)
+                    .Where(b => b.Author.Id == idAuthor)
+                    .ToListAsync();
+
+                if (books == null)
+                {
+                    response.Message = "No records found";
+                    return response;
+                }
+
+                response.Data = books;
+                response.Message = "All records found!";
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = false;
+            }
+
+            return response;
+        }
+
         public async Task<ResponseModel<List<BookModel>>> ListBooks()
         {
             ResponseModel<List<BookModel>> response = new ResponseModel<List<BookModel>>();
