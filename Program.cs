@@ -23,7 +23,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-var jwtConfig = builder.Configuration.GetSection("Jwt");
+var jwtConfig = builder.Configuration.GetSection("Jwt"); 
 var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? jwtConfig["Key"] ?? throw new InvalidOperationException("Nenhuma chave JWT configurada");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
