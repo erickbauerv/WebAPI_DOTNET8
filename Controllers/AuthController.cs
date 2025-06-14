@@ -4,6 +4,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using WebAPI_DOTNET8.DTOs;
+using WebAPI_DOTNET8.Models;
 
 namespace WebAPI_DOTNET8.Controllers
 {
@@ -19,7 +21,7 @@ namespace WebAPI_DOTNET8.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] UserLogin userLogin)
+        public IActionResult Login([FromBody] UserLoginDTO userLogin)
         {
             // 1. Validar usuário e senha
             if(userLogin.UserName != "admin" || userLogin.Password != "12345")
@@ -61,10 +63,4 @@ namespace WebAPI_DOTNET8.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
-}
-
-public class UserLogin
-{
-    public string UserName { get; set; }
-    public string Password { get; set; }
 }
