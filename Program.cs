@@ -5,6 +5,7 @@ using WebAPI_DOTNET8.Data;
 using WebAPI_DOTNET8.Services.Author;
 using WebAPI_DOTNET8.Services.Book;
 using System.Text;
+using WebAPI_DOTNET8.Services.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IAuthorInterface, AuthorService>();
 builder.Services.AddScoped<IBookInterface, BookService>();
+builder.Services.AddScoped<IAuthInterface, AuthService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

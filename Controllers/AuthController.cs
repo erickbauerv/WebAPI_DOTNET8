@@ -24,11 +24,14 @@ namespace WebAPI_DOTNET8.Controllers
         [HttpPost("login")] 
         public async Task<IActionResult> Login([FromBody] UserLoginDTO userLogin)
         {
+            // Validar model recebida
+            if (!ModelState.IsValid) 
+                return BadRequest(ModelState);
+
+            // Validar login do usuário
             var token = await _authInterface.Login(userLogin);
-            if (!token.Status)
-            {
+            if (!token.Status) 
                 return Unauthorized(token.Message);
-            }
 
             return Ok(token);
         }

@@ -1,6 +1,8 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using WebAPI_DOTNET8.Data;
 using WebAPI_DOTNET8.DTOs;
@@ -23,18 +25,18 @@ namespace WebAPI_DOTNET8.Services.Auth
             ResponseModel<string> response = new ResponseModel<string>();
             try
             {
-                var token = "";
-                // 1. Validar usuário e senha
-                if (userLogin.UserName != "admin" || userLogin.Password != "12345")
-                {
-                    response.Data = token;
-                    response.Message = "Usuário ou senha incorretos";
-                    response.Status = false;
+                // Buscar usuário no banco de dados
+                var user = await _context.UserLogin.FirstOrDefaultAsync(u => u.UserName == userLogin.UserName);
 
-                    return response;
-                }
+                // Verificar se usuário existe e Verificar senha (com hash seguro)
+                if (user == null || !VerifyPasswordHash(userLogin.Password, user.PasswordHash, user.PasswordSalt))
+                    throw new Exception("Usuário ou senha incorretos");
 
-                token = await GenerateJwtToken(userLogin.UserName);
+                // Gerar token JWT
+                var token = GenerateJwtToken(user);
+
+                response.Data = token;
+                response.Message = "Usuário logado com sucesso";
             }
             catch (Exception ex) 
             {
@@ -45,33 +47,47 @@ namespace WebAPI_DOTNET8.Services.Auth
             return response;
         }
 
-        private async Task<string> GenerateJwtToken(string userName)
+        private bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
         {
-            // 3. Configurar as informações do token Jwt (Claims)
+            using var hmac = new HMACSHA512(storedSalt);
+            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+            for (int i = 0; i < computedHash.Length; i++)
+            {
+                if (computedHash[i] != storedHash[i])
+                    return false;
+            }
+
+            return true;
+        }
+
+        private string GenerateJwtToken(UserLoginModel user)
+        {
+            // Configurar as informações do token Jwt (Claims)
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, userName),
-                new Claim(ClaimTypes.Role, "Admin"),
-                new Claim("Meu Claim Customizado", "ValorCustomizado")
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Role, user.Role)
             };
 
             var jwtConfig = _configuration.GetSection("Jwt");
             var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? jwtConfig["Key"] ?? throw new InvalidOperationException("Nenhuma chave JWT configurada");
 
-            // 4. CRIAR CHAVE SECRETA
+            // Criar chave secreta
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            // 5. CONFIGURAR TOKEN
+            // Configurar token
             var token = new JwtSecurityToken(
-                    issuer: jwtConfig["Issuer"],
-                    audience: jwtConfig["Audience"],
-                    claims: claims,
-                    expires: DateTime.Now.AddMinutes(Convert.ToDouble(jwtConfig["ExpiryInMinutes"])),
-                    signingCredentials: credentials
-                );
+                issuer: jwtConfig["Issuer"],
+                audience: jwtConfig["Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(Convert.ToDouble(jwtConfig["ExpiryInMinutes"])),
+                signingCredentials: credentials
+            );
 
-            // 6. GERAR E RETORNAR O TOKEN COMO STRING
+            // Gerar e retornar o token com string
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
