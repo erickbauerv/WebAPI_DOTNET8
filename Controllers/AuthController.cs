@@ -37,7 +37,7 @@ namespace WebAPI_DOTNET8.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserCreateDTO>> CreateUser(UserCreateDTO userCreateDTO)
+        public async Task<IActionResult> CreateUser(UserCreateDTO userCreateDTO)
         {
             // Validar model
             if(!ModelState.IsValid)
