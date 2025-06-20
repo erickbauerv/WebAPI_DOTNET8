@@ -35,5 +35,19 @@ namespace WebAPI_DOTNET8.Controllers
 
             return Ok(token);
         }
+
+        [HttpPost("register")]
+        public async Task<ActionResult<UserCreateDTO>> CreateUser(UserCreateDTO userCreateDTO)
+        {
+            // Validar model
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var response = await _authInterface.CreateUser(userCreateDTO);
+            if(!response.Status)
+                return BadRequest(response.Message);
+
+            return Ok(response);
+        }
     }
 }

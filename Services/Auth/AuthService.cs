@@ -90,5 +90,49 @@ namespace WebAPI_DOTNET8.Services.Auth
             // Gerar e retornar o token com string
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        public async Task<ResponseModel<UserCreateDTO>> CreateUser(UserCreateDTO userCreateDTO)
+        {
+            ResponseModel<UserCreateDTO> response = new ResponseModel<UserCreateDTO>();
+            try
+            {
+                // Verificar se usarname já existe
+                if (await _context.UserLogin.AnyAsync(u => u.UserName == userCreateDTO.UserName))
+                {
+                    throw new Exception("Nome de usuário já existe");
+                }
+
+                // Criar hash da senha
+                CreatePasswordHash(userCreateDTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+                // Criar novo usuário
+                var user = new UserLoginModel
+                {
+                    UserName = userCreateDTO.UserName,
+                    PasswordHash = passwordHash,
+                    PasswordSalt = passwordSalt
+                };
+
+                // Salvar no banco
+                _context.UserLogin.Add(user);
+                await _context.SaveChangesAsync();
+
+                response.Message = "Usuário criado com sucesso";
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = false;
+            }
+
+            return response;
+        }
+
+        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using var hmac = new HMACSHA512();
+            passwordSalt =  hmac.Key;
+            passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+        }
     }
 }

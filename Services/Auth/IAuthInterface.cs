@@ -6,5 +6,6 @@ namespace WebAPI_DOTNET8.Services.Auth
     public interface IAuthInterface
     {
         Task<ResponseModel<string>> Login(UserLoginDTO userLoginDTO);
+        Task<ResponseModel<UserCreateDTO>> CreateUser(UserCreateDTO userCreateDTO);
     }
 }
