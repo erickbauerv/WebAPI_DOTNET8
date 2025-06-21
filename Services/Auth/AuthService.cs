@@ -98,9 +98,10 @@ namespace WebAPI_DOTNET8.Services.Auth
             {
                 // Verificar se usarname já existe
                 if (await _context.UserLogin.AnyAsync(u => u.UserName == userCreateDTO.UserName))
-                {
                     throw new Exception("Nome de usuário já existe");
-                }
+
+                if (await _context.UserLogin.AnyAsync(u => u.Email == userCreateDTO.Email))
+                    throw new Exception("Email já cadastrado");
 
                 // Criar hash da senha
                 CreatePasswordHash(userCreateDTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -109,6 +110,7 @@ namespace WebAPI_DOTNET8.Services.Auth
                 var user = new UserLoginModel
                 {
                     UserName = userCreateDTO.UserName,
+                    Email = userCreateDTO.Email,
                     PasswordHash = passwordHash,
                     PasswordSalt = passwordSalt
                 };

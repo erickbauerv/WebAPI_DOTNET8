@@ -8,6 +8,10 @@ namespace WebAPI_DOTNET8.DTOs
         [StringLength(20, MinimumLength = 3, ErrorMessage = "Nome deve ter entre 3 e 20 caracteres")]
         public required string UserName { get; set; }
 
+        [Required(ErrorMessage = "Email é obrigatório")]
+        [EmailAddress(ErrorMessage = "Formato de email inválido")]
+        public required string Email { get; set; }
+
         [Required(ErrorMessage = "Senha é obrigatória")]
         [StringLength(100, MinimumLength = 8, ErrorMessage = "Senha deve ter no mínimo 8 caracteres")]
         [DataType(DataType.Password)]
